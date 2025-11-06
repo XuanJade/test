@@ -1,0 +1,15 @@
+name: TIM进程优化
+description: 划卡后杀死多余进程，需配置全局变量tim作为进程白名单。原作"请您好"，"AABCD_"改
+priority: 2 
+condition: taskRemoved == true && pkgName == "com.tencent.tim"
+actions: 
+  - > 
+    var tim = (globalVarOf$tim);
+    foreach(processRecord : thanos.activityManager.getRunningAppProcessForPackage("com.tencent.tim")) {
+      var proc = processRecord.getProcessName();
+      if (!tim.contains(proc)) {
+        thanos.activityManager.killProcessByName(proc);
+      }
+    }
+  - | 
+    ui.showShortToast("已清理TIM进程")
